@@ -1,3 +1,5 @@
+"use client";
+
 export default function Login(): JSX.Element {
   return (
     <div className="flex flex-col flex-1 p-4 rounded-lg shadow-lg max-w-md mx-auto mt-8 bg-gray-200">
