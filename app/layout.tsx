@@ -1,20 +1,28 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "To Do List",
-  description: "Himangshu Nath Barmon",
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+  const handleLogout = async () => {
+    try {
+      await axios.get("/api/logout");
+      console.log("Logout successfully");
+      router.push("/login");
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -33,6 +41,12 @@ export default function RootLayout({
                 <Link href="/login" className="hover:underline">
                   Login
                 </Link>
+              </li>
+              <li
+                className="hover:underline cursor-pointer"
+                onClick={handleLogout}
+              >
+                Logout
               </li>
             </ul>
           </nav>
