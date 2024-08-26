@@ -3,6 +3,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../utils/authContext";
 
 interface User {
   email: string;
@@ -17,6 +18,7 @@ export default function Login(): JSX.Element {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -37,6 +39,8 @@ export default function Login(): JSX.Element {
           password: user.password,
         });
         console.log("Login Successful");
+        const { userName } = response.data;
+        login(userName)
         alert("Login Successful");
         router.push("/");
       } catch (error) {

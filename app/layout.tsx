@@ -5,24 +5,46 @@ import "./globals.css";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { AuthProvider } from "./utils/authContext";
+import { useAuth } from "./utils/authContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({
+function LayoutContent({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const { isLoggedIn, userName, login, logout } = useAuth();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get("api/checkauth");
+        const { isLoggedIn, userName } = response.data;
+        login(userName);
+        console.log(userName);
+      } catch (error) {
+        console.error("Failed to check authentication:", error);
+      }
+    };
+    checkAuth();
+  }, []);
+
   const handleLogout = async () => {
     try {
       await axios.get("/api/logout");
+      logout();
       console.log("Logout successfully");
+
       router.push("/login");
     } catch (error: any) {
       console.log(error.message);
     }
   };
+
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -32,27 +54,49 @@ export default function RootLayout({
           </h1>
           <nav>
             <ul className="flex space-x-4">
-              <li>
-                <Link href="/signup" className="hover:underline">
-                  Signup
-                </Link>
-              </li>
-              <li>
-                <Link href="/login" className="hover:underline">
-                  Login
-                </Link>
-              </li>
-              <li
-                className="hover:underline cursor-pointer"
-                onClick={handleLogout}
-              >
-                Logout
-              </li>
+              {isLoggedIn ? (
+                <>
+                  <li>
+                    Logged as <span className="font-bold">{userName}</span>
+                  </li>
+                  <li
+                    className="hover:underline cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link href="/signup" className="hover:underline">
+                      Signup
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/login" className="hover:underline">
+                      Login
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
         </header>
         {children}
       </body>
     </html>
+  );
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <AuthProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </AuthProvider>
   );
 }
