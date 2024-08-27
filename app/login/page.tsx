@@ -40,7 +40,7 @@ export default function Login(): JSX.Element {
         });
         console.log("Login Successful");
         const { userName } = response.data;
-        login(userName)
+        login(userName);
         alert("Login Successful");
         router.push("/");
       } catch (error) {

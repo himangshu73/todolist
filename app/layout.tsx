@@ -24,14 +24,16 @@ function LayoutContent({
       try {
         const response = await axios.get("api/checkauth");
         const { isLoggedIn, userName } = response.data;
-        login(userName);
+        if (isLoggedIn) {
+          login(userName);
+        }
         console.log(userName);
       } catch (error) {
         console.error("Failed to check authentication:", error);
       }
     };
     checkAuth();
-  }, []);
+  }, [login]);
 
   const handleLogout = async () => {
     try {
