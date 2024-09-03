@@ -63,6 +63,15 @@ const Todolist = () => {
       }
     }
   };
+
+  const handleDelete = async (taskId: string) => {
+    try {
+      await axios.delete(`/api/todolist/${taskId}`);
+      setTasks(tasks.filter((task) => task._id !== taskId));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <h1 className="font-extrabold">{userName}'s ToDo List</h1>
@@ -82,6 +91,10 @@ const Todolist = () => {
         {tasks.map((taskItem) => (
           <li key={taskItem._id} className="border-b p-2">
             {taskItem.task}
+            <button
+              onClick={() => handleDelete(taskItem._id)}
+              className="bg-red-500 text-white p-1 rounded-sm ml-2"
+            ></button>
           </li>
         ))}
       </ul>
